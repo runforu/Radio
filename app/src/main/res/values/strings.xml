@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Radio</string>
+    <string name="tab_text_category">Category</string>
+    <string name="tab_text_favorite">Favorite</string>
+    <string name="tab_text_add">Add Radio Station</string>
+    <string name="menu_text_search">Search</string>
+    <string name="menu_text_settings">Settings</string>
+    <string name="menu_text_about">About</string>
+</resources>

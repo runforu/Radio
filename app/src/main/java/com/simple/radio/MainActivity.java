@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -25,17 +26,16 @@ import com.simple.radio.model.PlayViewModel;
 import com.simple.radio.model.RadioStation;
 import com.simple.radio.ui.main.SectionsPagerAdapter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,58 +57,43 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public static String doGET(String urlAddress) {
-        try {
-            URL url = new URL(urlAddress);
-            URLConnection connection = url.openConnection();
+    public static String get(String url) {
+        OkHttpClient httpClient = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
 
-            InputStream inputStream = connection.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            String line;
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String body = response.body().string();
+                Log.e(com.simple.radio.Constants.TAG, body);
+                return body;
             }
-            bufferedReader.close();
-            inputStreamReader.close();
-            inputStream.close();
-            return stringBuilder.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static String doPost(String urlAddress, String body) {
-        try {
-            URL url = new URL(urlAddress);
-            URLConnection connection = url.openConnection();
-            connection.addRequestProperty("encoding", "UTF-8");
-            connection.setRequestProperty("Content-Type", "application/json;UTF-8");
-            connection.setRequestProperty("Accept-Charset", "UTF-8");
-            connection.setRequestProperty("Accept", "application/json;*");
+    public static String post(String url) {
+        OkHttpClient httpClient = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder().build();
 
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()))) {
-                bufferedWriter.write(body);
-                bufferedWriter.flush();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String body = response.body().string();
+                Log.e(com.simple.radio.Constants.TAG, body);
+                return body;
             }
-
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"))) {
-                String line;
-                StringBuilder stringBuilder = new StringBuilder();
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
-                return stringBuilder.toString();
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 
@@ -125,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mPlayStatusReceiver, intentFilter);
 
         new Thread(() -> {
-            doGET("https://github.com");
-            doPost("https://github.com", "{}");
+            get("https://api.webrad.io/data/streams/71/coast");
+            post("https://api.webrad.io/data/streams/71/coast");
         }).start();
     }
 

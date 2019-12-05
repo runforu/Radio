@@ -1,6 +1,5 @@
 package com.simple.radio;
 
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +11,8 @@ import android.os.IBinder;
 import android.os.PowerManager;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.simple.radio.model.PlayStatus;
-import com.simple.radio.model.PlayViewModel;
 
 import java.io.IOException;
 
@@ -26,7 +23,6 @@ public class RadioService extends Service implements MediaPlayer.OnPreparedListe
     public static final String PLAY_STATUS_CHANGE = "com.simple.radio.PLAY_STATUS_CHANGE";
     public static final String DATA_SOURCE = "com.simple.radio.DATA_SOURCE";
     public static final String PLAY_STATUS = "com.simple.radio.PLAY_STATUS";
-
     MediaPlayer mMediaPlayer;
     WifiManager.WifiLock mWifiLock;
     private Intent mIntent = new Intent("com.simple.radio.PLAY_STATUS_CHANGE");
@@ -37,8 +33,7 @@ public class RadioService extends Service implements MediaPlayer.OnPreparedListe
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mMediaPlayer.setOnErrorListener(this);
-        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE))
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "radio_lock");
+        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE)).createWifiLock(WifiManager.WIFI_MODE_FULL, "radio_lock");
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -86,7 +81,7 @@ public class RadioService extends Service implements MediaPlayer.OnPreparedListe
             mIntent.removeExtra(PLAY_STATUS);
             mIntent.putExtra(PLAY_STATUS, PlayStatus.STATUS_NONE);
             sendBroadcast(mIntent);
-        }else {
+        } else {
             stopSelf();
         }
         return START_STICKY;
@@ -98,7 +93,7 @@ public class RadioService extends Service implements MediaPlayer.OnPreparedListe
         if (mWifiLock.isHeld()) {
             mWifiLock.release();
         }
-        if(mMediaPlayer.isPlaying()){
+        if (mMediaPlayer.isPlaying()) {
             mMediaPlayer.stop();
         }
         mMediaPlayer.release();

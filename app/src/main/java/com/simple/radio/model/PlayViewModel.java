@@ -1,19 +1,12 @@
 package com.simple.radio.model;
 
-import android.content.Intent;
-import android.os.Bundle;
-
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.simple.radio.RadioService;
-
-import static com.simple.radio.RadioService.ACTION_PLAY;
-import static com.simple.radio.RadioService.ACTION_STOP;
-import static com.simple.radio.RadioService.DATA_SOURCE;
-
 public class PlayViewModel extends ViewModel {
 
+    private MutableLiveData<PlayStatus> mPlayStatus = new MutableLiveData<>();
+    private MutableLiveData<RadioStation> mCurrentRadioStation = new MutableLiveData<>();
 
     public MutableLiveData<PlayStatus> getPlayStatus() {
         return mPlayStatus;
@@ -23,21 +16,17 @@ public class PlayViewModel extends ViewModel {
         mPlayStatus.setValue(status);
     }
 
-    public void setStation(StationInfo station) {
-        mCurrentRadio.setValue(station);
-    }
-
-    public void setStation(StationInfo station, PlayStatus status) {
-        mCurrentRadio.setValue(station);
+    public void setStation(RadioStation station, PlayStatus status) {
+        mCurrentRadioStation.setValue(station);
         mPlayStatus.setValue(status);
     }
 
-    public MutableLiveData<StationInfo> getStation() {
-        return mCurrentRadio;
+    public MutableLiveData<RadioStation> getStation() {
+        return mCurrentRadioStation;
     }
 
-    private MutableLiveData<PlayStatus> mPlayStatus = new MutableLiveData<>();
-
-    private MutableLiveData<StationInfo> mCurrentRadio = new MutableLiveData<>();
+    public void setStation(RadioStation station) {
+        mCurrentRadioStation.setValue(station);
+    }
 
 }
